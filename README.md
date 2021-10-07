@@ -6,7 +6,7 @@
 
 ### **LinearHarmonicOscillator.jl**
 
-模拟在 "与距离成正比的力场" 里任意粒子的演化.
+模拟在 "与距离成正比的力场" 里任意粒子的演化. video: bilibili.com/video/BV1HQ4y1B7ia/
 
 参数
  + `φ(x)`: 粒子在 t=0 时的波函数
