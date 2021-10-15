@@ -21,7 +21,6 @@ julia> ψ(5, π/2, 3π/2)
 """
 function HydrogenWaveFunc(n::Integer, l::Integer, m::Integer)
     if ~(n > 0  &&  0 <= l < n  &&  abs(m) <= l)
-        print(n > 0  &&  0 <= l < n  &&  abs(m) <= l)
         error("invalid quantum number: n=$n, l=$l, m=$m")
     end
 
