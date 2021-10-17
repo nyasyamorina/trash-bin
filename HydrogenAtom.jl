@@ -1,5 +1,5 @@
 """
-    HydrogenWaveFunc(n, m, l)
+    HydrogenWaveFunc(n, l, m)
 
 Get electron wave function in hydrogen atom.
 
