@@ -81,7 +81,7 @@ function HydrogenWaveFunc(n::Integer, l::Integer, m::Integer)
     α = 2 / n
     norm_nl = 2 / factorial(2l + 1) * √(factorial(n + l) / factorial(nᵣ))
     norm_nl *= α^l
-    norm_nl /= 2^n          # I don't know how this appeared.
+    norm_nl /= n^2          # I don't know how this appeared.
     # ││└
     R = r -> norm_nl * exp(-r / n) * r^l * F11(α * r)
     # │└
