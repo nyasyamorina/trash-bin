@@ -153,7 +153,7 @@ function showwave(n::Integer, l::Integer, m::Integer, zp::Real)
     w = Matrix{Float64}(undef, figheight, figwidth)
     for zidx ∈ 1 : figheight, xidx ∈ 1 : figwidth
         x = xrange[xidx]; z = zrange[zidx]
-        w[zidx, xidx] = abs(ψ(Cartesian2Spherical(x, 0, z)...))
+        w[zidx, xidx] = abs2(ψ(Cartesian2Spherical(x, 0, z)...))
     end
 
     fig = heatmap(xrange, zrange, w, c = cgrad(:gnuplot, scale = :exp),
