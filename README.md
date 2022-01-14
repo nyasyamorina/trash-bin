@@ -67,3 +67,10 @@ Note: 渲染视频之后, 视频帧是不会自动删掉的, 所以需要手动�
 ### **render_zeta.py**
 
 Code for [video](https://www.bilibili.com/video/BV1H54y1B7gB).
+
+---
+
+### **wavelet - funcs.jl**
+
+小波变换的[第四节专栏](https://www.bilibili.com/read/cv14836786)的例子程序.
+
