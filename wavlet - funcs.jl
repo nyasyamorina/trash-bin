@@ -45,6 +45,9 @@ Base.getindex(fa::FiniteArray, idces::AbstractArray) = map(idx -> fa[idx], idces
 FiniteArray{T}(init::UndefInitializer, idxstart, idxend; padding = Zero) where T <: Number =
         FiniteArray(idxstart, Vector{T}(init, idxend - idxstart + 1), padding)
 
+FiniteArray(gen::Base.Generator; padding = Zero) =
+        FiniteArray(first(gen.iter), collect(gen), padding)
+
 
 ###########################  Scale coefficients {pₖ}  #########################
 
