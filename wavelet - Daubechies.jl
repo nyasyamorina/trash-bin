@@ -1,5 +1,5 @@
 include("wavlet - funcs.jl")
-using Polynomials, Plots
+using Polynomials
 
 
 function genDaubechiesCoefs(N::Integer)
