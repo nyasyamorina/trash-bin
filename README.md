@@ -74,3 +74,8 @@ Code for [video](https://www.bilibili.com/video/BV1H54y1B7gB).
 
 小波变换的[第四节专栏](https://www.bilibili.com/read/cv14836786)的例子程序.
 
+---
+
+### **wavelet - Daubechies.jl**
+
+小波变换的[第三点五节专栏](https://www.bilibili.com/read/cv14904479)的例子程序.
