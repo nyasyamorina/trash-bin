@@ -79,3 +79,9 @@ Code for [video](https://www.bilibili.com/video/BV1H54y1B7gB).
 ### **wavelet - Daubechies.jl**
 
 小波变换的[第三点五节专栏](https://www.bilibili.com/read/cv14904479)的例子程序.
+
+---
+
+### **BinSqrt.jl**
+
+以任意精度计算定点数开方的程序, 原理在mc开方器的[专栏](https://www.bilibili.com/read/cv15958091)里.
