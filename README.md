@@ -85,3 +85,11 @@ Code for [video](https://www.bilibili.com/video/BV1H54y1B7gB).
 ### **BinSqrt.jl**
 
 以任意精度计算定点数开方的程序, 原理在mc开方器的[专栏](https://www.bilibili.com/read/cv15958091)里.
+
+---
+
+### TestQOI.cpp & qoi-test.jl
+
+自己实现的 qoi 编码/解码器, 原理在[这个专栏](https://www.bilibili.com/read/cv17617178)里.
+
+`.jl` 是专栏里实现的接口,  `.cpp` 是用 [cimg](https://github.com/dtschump/CImg) 做的一个简易可执行程序.
