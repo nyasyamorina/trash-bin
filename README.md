@@ -99,3 +99,9 @@ Code for [video](https://www.bilibili.com/video/BV1H54y1B7gB).
 ### SpecialRelativity.jl
 
 一个关于狭义相对论的数值模拟, 原理和成品在[这个专栏](https://www.bilibili.com/read/cv18977828)里.
+
+---
+
+### video - Lorentz.py
+
+渲染洛伦兹方程的[视频](https://www.bilibili.com/video/BV167411E7JZ)的源码.
