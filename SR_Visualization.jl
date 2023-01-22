@@ -21,7 +21,7 @@ CUDA.allowscalar(false)
 dot(uᵅ, vᵅ) = sum(uᵅ .* conj.(vᵅ))
 const ⋅ = dot
 
-"Calculate the cross product of two 3D-vector"
+"Calculate the cross product of two 3-D vector"
 cross((u¹, u², u³), (v¹, v², v³)) = begin
     u² * v³ - v² * u³,
     u³ * v¹ - v³ * u¹,
@@ -98,11 +98,11 @@ end
 
 ###############################################################################  special relativity stuff
 
-"light speed"
+"light speed `c`(ms⁻¹)"
 const c = 299_792_45
 
 """
-    fov_shift(qᵅ, β)
+    fovshift(qᵅ, β)
 
 Shift the light direction @ "movement" observer to the direction @ "stationary observer".
 
@@ -134,7 +134,7 @@ const REDUCE_COLOR = :clamp
 reduce(rgb) = if REDUCE_COLOR == :linear_max
     max.(rgb ./ max(rgb..., 1), 0)
 elseif REDUCE_COLOR == :clamp
-    min.(max.(rgb, 0), 1) # ?gpu_err clamp.(rgb, 0, 1)
+    min.(max.(rgb, 0), 1) # ? gpu_err for `clamp.(rgb, 0, 1)`
 else
     rgb
 end
@@ -145,7 +145,7 @@ mired(T) = 1_000_000 / T
 
 const _c₂ = 14.387768775039339
 
-"Planck's black body radiation, the wavelength `λ`(μm) & mired `M`(MK⁻¹)"
+"Planck's black body radiation, the wavelength `λ`(nm) & mired `M`(MK⁻¹)"
 B(λ, M) = 1 / ((0.001λ)^5 * (exp(_c₂ * M / λ) - 1))     # `0.001` makes the result not so close to 0.
 
 "Get the color (@ CIEXYZ) of black body @ mired `M` with luminance `L` (@ `z=0`) and spectral shift `z`"
