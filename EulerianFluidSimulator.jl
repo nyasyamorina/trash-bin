@@ -26,7 +26,7 @@ struct FluidGPU
     f::CuMatrix{Bool}       # is cell fluid?
     u::CuMatrix{Float32}    # horizontal speed
     v::CuMatrix{Float32}    # vertical speed
-    p::CuMatrix{Float32}    # presure
+    p::CuMatrix{Float32}    # pressure
     s::CuMatrix{Float32}    # smoke
     _tmp::NTuple{5, CuMatrix{Float32}}  # some buffer for calculation
 
@@ -50,7 +50,7 @@ end
 function applyincompressibility(f::FluidGPU, Δt, n)
     "the fluid is incompressible means the fluid flows into the cell is equal to flow out of the cell."
     H, W = f.size
-    p_ = Float32(f.Δc / Δt)     # presure change
+    p_ = Float32(f.Δc / Δt)     # pressure change
 
     core = (f, u, v, p, Δu₁, Δu₂, Δv₁, Δv₂) -> @inbounds begin
         linear = (blockIdx().x - 1) * blockDim().x + threadIdx().x
@@ -61,14 +61,14 @@ function applyincompressibility(f::FluidGPU, Δt, n)
             fd = Int(f[h, w + 1])
             fr = Int(f[h + 1, w + 2])
             fu = Int(f[h + 2, w + 1])
-            # the convergence of each speed which connect the fluid cell nearby
-            c = (u[h, w] + v[h, w] - u[h, w + 1] - v[h + 1, w]) / (fl + fd + fr + fu)
-            p[h + 1, w + 1] += c * p_           # update presure
+            # the divergence of each speed which connect the fluid cell nearby
+            d = -(u[h, w] + v[h, w] - u[h, w + 1] - v[h + 1, w]) / (fl + fd + fr + fu)
+            p[h + 1, w + 1] -= d * p_           # update pressure
             # record the speed change due to incompressibility
-            Δu₁[h, w] = -c * fl
-            Δv₁[h, w] = -c * fd
-            Δu₂[h, w + 1] = c * fr
-            Δv₂[h + 1, w] = c * fu
+            Δu₁[h, w] = d * fl
+            Δv₁[h, w] = d * fd
+            Δu₂[h, w + 1] = -d * fr
+            Δv₂[h + 1, w] = -d * fu
         else
             Δu₁[h, w] = 0
             Δv₁[h, w] = 0
@@ -227,7 +227,7 @@ function windtunnel(gridsize, Δc)
     end
     f.f .= CuArray(ff)  # apply the scenes into simulator
     # add a constant inject flow at the left wall, random number for breaking the symmetry
-    f.u[:, 1] .= 1 .+ 0.02 .* (CUDA.rand(Float32, H) .+ CUDA.rand(Float32, H) .- 1)
+    f.u[:, 1] .= 1 #.+ 0.02 .* (CUDA.rand(Float32, H) .+ CUDA.rand(Float32, H) .- 1)
     # add a smoke source at the center of left wall
     smoke_wide = 2
     h₁ = round(Int, 0.5 * (H - smoke_wide / Δc))
@@ -276,6 +276,7 @@ mutable struct FluidAnimation{Sub}
 
     function FluidAnimation(f::FluidGPU, L; buff_size = 1GB, frame_dir = mktempdir())
         isdir(frame_dir) || mkpath(frame_dir)
+        @info "temporary frames dir: \"$frame_dir\""
         H, W = f.size
         fH, fW = 2 .* f.size .+ 4
         L_gpu = min(L, floor(Int, buff_size / (3 * fH * fW)))
@@ -310,7 +311,7 @@ end
 function renderframe!(anim::FluidAnimation, f::FluidGPU, u_ex, v_ex, p_ex, s_ex)
     map_core = (x, ex) -> begin
         c01 = clamp(x / 2ex + 0.5f0, 0, 1)
-        # ? cuda cannot complie `clamp.(...)` but `min.(max.(...))`
+        # ? cuda cannot complie `clamp.(...)` but `min.(max.(...))` can
         return floor.(UInt8, min.(max.(nyasrkb(c01) .* 256, 0f0), 255f0))
     end
     anim.u_frames[:, :, anim.idx] .= map_core.(f.u, u_ex)
@@ -341,7 +342,8 @@ end
 function savevideo(path, anim::FluidAnimation; fps = 25, crf = 28, preset = "slow")
     "save video to `path` using ffmpeg with NVENC encoding, run `FFMPEG.exe(`-h encoder=hevc_nvenc`)` to see more"
     anim.stop || @warn "saving video while the animation is not stop"
-    FFMPEG.exe(`-y -v 16 -framerate $fps -i $(anim.frame_dir)/%06d.png -c:v hevc_nvenc -tune hq -rc:v vbr -cq:v $crf -preset $preset $path`)
+    FFMPEG.exe(`-y -v 16 -framerate $fps -i $(anim.frame_dir)/%06d.png -c:v hevc_nvenc -tune hq -rc:v vbr -cq:v $crf -preset $preset -pix_fmt yuv420p $path`)
+    @info "saved video at \"$path\""
 end
 
 
@@ -358,8 +360,8 @@ function main()
     anim = FluidAnimation(fluid, length(time_axis) + 1; buff_size = 4GB)
     # simulate and render frame
     Δt = frame_time / n_update
-    ex = (2.5f0, 1f0, 0.5f0, 1f0)        # max value shown on video
-    @showprogress for (k, _) ∈ enumerate(time_axis)
+    ex = (1.5f0, 1f0, 0.5f0, 1f0)        # max value shown on video
+    @showprogress for _ ∈ time_axis
         addframe!(anim, fluid, ex...)
         for _ ∈ 1:n_update
             update!(fluid, Δt, 100)
